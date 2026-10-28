@@ -1,0 +1,45 @@
+{
+"services":[
+{"slug":"phat-trien-phan-mem-theo-yeu-cau","name":"Phát triển phần mềm theo yêu cầu","category":"Phần mềm","summary":"Thiết kế và xây dựng phần mềm riêng phù hợp quy trình của từng doanh nghiệp.","benefits":["Bám sát quy trình nghiệp vụ thực tế","Chủ động mở rộng và tích hợp về sau"],"scope":["Phân tích nghiệp vụ","Thiết kế kiến trúc","Lập trình và kiểm thử","Bàn giao và hướng dẫn sử dụng"],"audience":"Doanh nghiệp có quy trình đặc thù mà phần mềm đóng gói chưa đáp ứng."},
+{"slug":"phat-trien-website-nen-tang-so","name":"Phát triển website và nền tảng số","category":"Web","summary":"Xây dựng website doanh nghiệp, cổng thông tin và nền tảng số vận hành ổn định.","benefits":["Hiện diện số chuyên nghiệp","Dễ quản trị và mở rộng"],"scope":["Thiết kế giao diện","Phát triển frontend và backend","Tối ưu hiệu năng và SEO cơ bản","Triển khai và bảo trì"],"audience":"Doanh nghiệp, tổ chức cần website hoặc nền tảng trực tuyến."},
+{"slug":"phat-trien-ung-dung-mobile","name":"Phát triển ứng dụng mobile","category":"Mobile","summary":"Xây dựng ứng dụng di động cho Android và iOS, kết nối với hệ thống quản trị.","benefits":["Tiếp cận người dùng trên thiết bị di động","Kết nối dữ liệu với hệ thống nội bộ"],"scope":["Thiết kế trải nghiệm","Phát triển ứng dụng","Tích hợp API","Hỗ trợ phát hành"],"audience":"Doanh nghiệp muốn đưa dịch vụ hoặc nghiệp vụ lên ứng dụng di động."},
+{"slug":"erp-crm-he-thong-quan-tri","name":"Phát triển ERP, CRM và hệ thống quản trị","category":"Quản trị","summary":"Hệ thống quản lý vận hành, khách hàng và dữ liệu doanh nghiệp tập trung.","benefits":["Dữ liệu tập trung, thống nhất","Giảm thao tác thủ công"],"scope":["Khảo sát quy trình","Thiết kế phân hệ","Triển khai và đào tạo","Hỗ trợ vận hành"],"audience":"SME cần quản lý bán hàng, kho, khách hàng hoặc vận hành trên một hệ thống."},
+{"slug":"ung-dung-ai-va-ai-agent","name":"Ứng dụng AI và AI agent","category":"AI","summary":"Đưa AI và AI agent vào các tác vụ bán hàng, chăm sóc khách hàng và quy trình nội bộ.","benefits":["Tự động hóa tác vụ lặp lại","Hỗ trợ khách hàng nhất quán"],"scope":["Xác định bài toán phù hợp với AI","Xây dựng và tích hợp agent","Kiểm thử","Giám sát và cải tiến"],"audience":"Doanh nghiệp muốn thử nghiệm và triển khai AI vào vận hành thực tế."},
+{"slug":"thiet-ke-ui-ux","name":"Thiết kế UI/UX","category":"Thiết kế","summary":"Thiết kế giao diện và trải nghiệm người dùng rõ ràng, dễ dùng cho web và mobile.","benefits":["Giảm sai sót thao tác","Giao diện nhất quán"],"scope":["Nghiên cứu người dùng","Wireframe và prototype","Thiết kế giao diện","Bộ thành phần dùng lại"],"audience":"Đơn vị cần thiết kế mới hoặc cải thiện sản phẩm số hiện có."},
+{"slug":"cloud-devops-kubernetes","name":"Cloud, DevOps và Kubernetes","category":"Hạ tầng","summary":"Triển khai hệ thống trên cloud với container, CI/CD và Kubernetes.","benefits":["Triển khai nhất quán","Dễ mở rộng và giám sát"],"scope":["Thiết kế hạ tầng","Đóng gói container","Thiết lập CI/CD","Giám sát và vận hành"],"audience":"Đơn vị đã có phần mềm cần triển khai và vận hành ổn định."},
+{"slug":"bao-tri-nang-cap-phan-mem","name":"Bảo trì và nâng cấp phần mềm","category":"Vận hành","summary":"Duy trì, sửa lỗi và nâng cấp phần mềm đang vận hành.","benefits":["Hệ thống hoạt động ổn định","Cập nhật theo nhu cầu mới"],"scope":["Rà soát hệ thống","Sửa lỗi","Bổ sung tính năng","Nâng cấp công nghệ"],"audience":"Doanh nghiệp đang dùng phần mềm cần người tiếp tục duy trì."},
+{"slug":"tu-van-chuyen-doi-so","name":"Tư vấn chuyển đổi số","category":"Tư vấn","summary":"Đánh giá hiện trạng và đề xuất lộ trình số hóa phù hợp quy mô doanh nghiệp.","benefits":["Ưu tiên đúng việc cần làm","Hạn chế đầu tư dàn trải"],"scope":["Khảo sát hiện trạng","Đề xuất giải pháp","Lộ trình triển khai"],"audience":"SME bắt đầu số hóa hoặc muốn tối ưu quy trình vận hành."},
+{"slug":"dao-tao-ai-lap-trinh-voi-ai","name":"Đào tạo ứng dụng AI và lập trình với AI","category":"Đào tạo","summary":"Đào tạo đội ngũ sử dụng AI trong công việc và lập trình có hỗ trợ AI.","benefits":["Nâng năng suất làm việc","Dùng AI có kiểm soát"],"scope":["Đánh giá nhu cầu","Xây dựng nội dung theo nhóm đối tượng","Thực hành trên tình huống thực tế"],"audience":"Doanh nghiệp, đội ngũ kỹ thuật và nhân sự muốn ứng dụng AI vào công việc."}
+],
+"products":[
+{"slug":"linora","name":"Linora","summary":"Nền tảng mạng xã hội giao dịch mua bán.","audience":"Người mua, người bán và đơn vị kinh doanh trực tuyến.","features":["Ứng dụng di động","Hệ thống quản trị","Dịch vụ chat","Website"]},
+{"slug":"linora-erp","name":"Linora-ERP","summary":"Giải pháp SaaS phục vụ quản trị doanh nghiệp.","audience":"Doanh nghiệp cần quản trị vận hành trên nền tảng SaaS.","features":["Mô hình SaaS","Quản trị doanh nghiệp"]},
+{"slug":"linora-ai","name":"Linora-AI","summary":"Giải pháp AI cho doanh nghiệp thuộc hệ sinh thái Linora.","audience":"Doanh nghiệp muốn ứng dụng AI trong hệ sinh thái Linora.","features":["AI cho doanh nghiệp","Thuộc hệ sinh thái Linora"]},
+{"slug":"platinum-ai-agentic","name":"Platinum AI Agentic","summary":"Bộ AI agent hỗ trợ bán hàng, chăm sóc khách hàng và tự động hóa quy trình nội bộ.","audience":"Doanh nghiệp bán hàng và chăm sóc khách hàng đa kênh.","features":["Hỗ trợ bán hàng","Chăm sóc khách hàng qua Zalo, WhatsApp, website","Tự động hóa quy trình nội bộ"]}
+],
+"projects":[
+{"slug":"mcpayment","name":"MCPAYMENT","category":"Thanh toán","summary":"Phần mềm cổng thanh toán."},
+{"slug":"huewaco","name":"HUEWACO","category":"Xử lý số tự động","summary":"Phần mềm xử lý số tự động trong giao dịch khách hàng."},
+{"slug":"thanh-giong","name":"Thanh Giong","category":"ERP","summary":"Phần mềm ERP chuỗi đại lý phân phối gas."},
+{"slug":"ar","name":"AR","category":"Kiểm toán","summary":"Phần mềm kiểm toán cho các công ty kế toán vừa và nhỏ."},
+{"slug":"arvi","name":"ARVI","category":"Kiểm toán","summary":"Phần mềm tự động hóa và phân tích dữ liệu nghiệp vụ kiểm toán."},
+{"slug":"gosafe","name":"GOSAFE","category":"Vận tải","summary":"Hệ thống quản lý và phân phối tài xế."},
+{"slug":"kg","name":"KG","category":"Bất động sản","summary":"Hệ thống quản lý và phân phối bất động sản."},
+{"slug":"linora-platform","name":"Linora","category":"Nền tảng","summary":"Nền tảng mạng xã hội giao dịch mua bán."}
+],
+"process":[
+{"name":"Khảo sát hệ thống","desc":"Tìm hiểu hiện trạng, quy trình và mục tiêu.","output":"Biên bản khảo sát","duty":"Khách hàng cung cấp thông tin và đầu mối làm việc."},
+{"name":"Báo giá và ký hợp đồng","desc":"Thống nhất phạm vi, chi phí và tiến độ.","output":"Báo giá, hợp đồng","duty":"Hai bên xác nhận phạm vi và điều khoản."},
+{"name":"Tư vấn giải pháp","desc":"Đề xuất giải pháp và công nghệ phù hợp.","output":"Tài liệu giải pháp","duty":"Khách hàng phản hồi và chốt phương án."},
+{"name":"Lập kế hoạch thực hiện","desc":"Chia giai đoạn, phân công và đặt mốc.","output":"Kế hoạch dự án","duty":"Hai bên thống nhất mốc và đầu mối."},
+{"name":"Triển khai","desc":"Phát triển, kiểm thử và cài đặt hệ thống.","output":"Hệ thống vận hành","duty":"Khách hàng tham gia kiểm tra và góp ý."},
+{"name":"Báo cáo và nghiệm thu","desc":"Tổng kết, bàn giao và nghiệm thu.","output":"Biên bản nghiệm thu","duty":"Khách hàng nghiệm thu theo thỏa thuận."}
+],
+"tech":[
+{"group":"Frontend và mobile","items":["React Native","Next.js"]},
+{"group":"Backend","items":["ASP.NET Core 8","NestJS"]},
+{"group":"Database","items":["PostgreSQL","MySQL/MariaDB","MongoDB","Redis"]},
+{"group":"Cloud và DevOps","items":["Container","Kubernetes","Cloud và DevOps"]},
+{"group":"AI và tự động hóa","items":["AI agent hỗ trợ phân tích, lập trình, kiểm thử và vận hành"]}
+]
+}

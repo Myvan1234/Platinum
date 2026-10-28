@@ -1,0 +1,11 @@
+export { Home } from "./pages/Home";
+export { About } from "./pages/About";
+export { Services } from "./pages/Services";
+export { ServiceDetail } from "./pages/ServiceDetail";
+export { Products } from "./pages/Products";
+export { Projects } from "./pages/Projects";
+export { ProjectDetail } from "./pages/ProjectDetail";
+export { Tech } from "./pages/Tech";
+export { Process } from "./pages/Process";
+export { Contact } from "./pages/Contact";
+export { NotFound } from "./pages/NotFound";
