@@ -1,0 +1,37 @@
+{
+  "name": "platinum-technology",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "node --watch server/index.js",
+    "dev:web": "vite",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "seed": "node server/setup.js seed",
+    "admin:create": "node server/setup.js admin",
+    "db:local": "node scripts/mongo.js",
+    "test": "node --test server/*.test.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.16.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.0",
+    "helmet": "^8.1.0",
+    "express-rate-limit": "^8.0.0",
+    "dotenv": "^17.0.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0",
+    "@vitejs/plugin-react": "^4.6.0",
+    "concurrently": "^9.1.0",
+    "mongodb-memory-server": "^10.2.0",
+    "playwright": "^1.56.0"
+  }
+}

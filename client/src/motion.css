@@ -1,0 +1,94 @@
+
+@keyframes page-arrive {
+  from { opacity: .65; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes panel-arrive {
+  from { opacity: .55; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes card-arrive {
+  from { opacity: .55; }
+  to { opacity: 1; }
+}
+
+@keyframes image-sweep {
+  from { transform: translateX(-115%) skewX(-16deg); }
+  to { transform: translateX(115%) skewX(-16deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .route-content { animation: page-arrive .26s ease-out both; }
+  .detail-content, .contact-layout > .panel, .admin .editor, .admin .inquiry,
+  details[open] > p, .chat-log > .bubble:last-child, .notice.success, .notice.error {
+    animation: panel-arrive .24s ease-out both;
+  }
+
+  .product-visual { position: relative; overflow: hidden; }
+  .product-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent 24%, #cdc4ff20 50%, transparent 76%);
+    animation: image-sweep .95s ease-out .12s both;
+  }
+
+  .button, .icon-button, .tabs button, .entry-list button, .suggestions button {
+    transition: background-color .18s, border-color .18s, box-shadow .18s, transform .18s;
+  }
+  .button:not(:disabled):active, .icon-button:active,
+  .tabs button:active, .suggestions button:active { transform: scale(.98); }
+  .button svg { transition: transform .18s; }
+  .button:not(:disabled):hover svg { transform: translateX(2px); }
+  input, textarea, select { transition: border-color .18s, box-shadow .18s; }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px #4f40db17;
+  }
+  details, .inquiry { transition: border-color .2s, background-color .2s; }
+  details[open], .inquiry:focus-within { border-color: #b3aaf6; }
+  .tabs button:hover, .entry-list button:not(.primary):hover, .suggestions button:hover {
+    border-color: #b3aaf6;
+    background-color: #f5f3ff;
+  }
+
+  @media (max-width: 690px) {
+    #site-nav.visible { animation: panel-arrive .19s ease-out both; }
+  }
+}
+
+
+.catalog-count{display:inline-block;margin-bottom:6px;color:#5044b8;font-size:.85rem;font-variant-numeric:tabular-nums}
+.catalog-count strong{font-size:1.07rem}
+.catalog-products .catalog-count{color:#ccc5ff}
+.hero-title-mask{overflow:hidden;padding-bottom:.12em;margin-bottom:-.12em}
+@keyframes banner-title{
+  from{transform:translateY(108%)}
+  to{transform:translateY(0)}
+}
+@keyframes banner-depth{
+  from{transform:scale(1.045) translateY(-1%)}
+  to{transform:scale(1.11) translateY(3%)}
+}
+@keyframes image-pan{
+  from{background-position:center 38%}
+  to{background-position:center 66%}
+}
+@media(prefers-reduced-motion:no-preference){
+  .hero-copy .hero-title-mask h1{animation:banner-title .67s cubic-bezier(.2,.65,.25,1) .1s both}
+  .hero-copy>p:not(.eyebrow){animation-delay:.23s}
+  .hero-copy .actions{animation-delay:.32s}
+  .hero-art::before{animation:hero-settle .85s ease-out both,banner-depth 4s ease-in-out .85s forwards}
+  [data-scroll-reveal].scroll-revealed,.quick-nav>a.scroll-revealed{
+    animation:panel-arrive .42s ease-out backwards;
+  }
+  .catalog .card.scroll-revealed{animation:card-arrive .5s ease-out both}
+  .catalog .card.scroll-revealed:nth-child(2n){animation-delay:.07s}
+  .catalog .card.scroll-revealed:nth-child(3n){animation-delay:.14s}
+  @supports (animation-timeline:view()){
+    .product-visual{animation:image-pan linear both;animation-timeline:view();animation-range:entry 0% exit 100%}
+  }
+}

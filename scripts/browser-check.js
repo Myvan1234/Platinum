@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import mongoose from 'mongoose';
+import { chromium } from 'playwright';
+import { Contact, connect } from '../server/data.js';
+
+const origin = 'http://127.0.0.1:5173';
+const email = 'browser-check-' + randomUUID() + '@example.test';
+let browser;
+try {
+  await connect();
+  browser = await chromium.launch();
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto(origin);
+  await page.getByRole('heading', { name: 'Công nghệ cho bài toán doanh nghiệp.' }).waitFor();
+  assert.equal(await page.locator('header').getByRole('link', { name: 'Dự án' }).count(), 0);
+  const hero = await page.request.get(origin + '/platinum-hero.jpg');
+  assert.equal(hero.status(), 200);
+  assert.match(hero.headers()['content-type'], /^image\//);
+  await page.locator('main').getByRole('link', { name: 'Cloud và DevOps', exact: false }).click();
+  await page.getByRole('heading', { name: 'Cloud và DevOps' }).waitFor();
+  await page.getByRole('link', { name: 'Trao đổi nhu cầu' }).click();
+  await page.getByLabel('Họ và tên').fill('Kiểm thử trình duyệt');
+  await page.getByLabel('Email').fill(email);
+  await page.getByLabel('Nội dung yêu cầu').fill('Yêu cầu dùng để kiểm tra lưu trữ.');
+  await page.getByRole('button', { name: 'Gửi yêu cầu' }).click();
+  await page.getByText('Platinum đã nhận được yêu cầu của bạn.').waitFor();
+  assert.equal(await Contact.countDocuments({ email }), 1);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Mở menu' }).focus();
+  await page.keyboard.press('Enter');
+  await page.locator('#site-nav').getByRole('link', { name: 'Trang chủ' }).click();
+  await page.getByRole('heading', { name: 'Công nghệ cho bài toán doanh nghiệp.' }).waitFor();
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  const opener = page.getByRole('button', { name: 'Hỏi AI về Platinum' });
+  await opener.focus();
+  await page.keyboard.press('Enter');
+  const input = page.getByRole('textbox', { name: 'Câu hỏi về Platinum' });
+  assert.equal(await input.evaluate(node => node === document.activeElement), true);
+  await input.fill('Platinum hoạt động ở đâu?');
+  await page.keyboard.press('Enter');
+  await page.getByText('Trợ lý AI chưa được cấu hình.', { exact: false }).waitFor();
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'hidden' });
+  assert.equal(await opener.evaluate(node => node === document.activeElement), true);
+  await page.goto(origin + '/quan-tri');
+  await page.getByRole('heading', { name: 'Đăng nhập quản trị' }).waitFor();
+  assert.deepEqual(errors, []);
+  console.log('Đã kiểm tra Chromium: điều hướng, biểu mẫu lưu MongoDB, giao diện 390px, bàn phím và trạng thái AI chưa cấu hình.');
+} finally {
+  await browser?.close();
+  if (mongoose.connection.readyState === 1) await Contact.deleteOne({ email });
+  await mongoose.disconnect();
+}
