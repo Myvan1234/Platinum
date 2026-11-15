@@ -1,6 +1,6 @@
 # Platinum Technology
 
-Website doanh nghiệp bằng React/Vite, React Router, Node.js/Express và MongoDB/Mongoose. Nội dung công khai, quản trị và yêu cầu tư vấn dùng chung MongoDB. Trợ lý tiếng Việt truy xuất nội dung đã xuất bản rồi gọi OpenAI từ máy chủ.
+Website doanh nghiệp bằng React/Vite, React Router, Node.js/Express và MongoDB/Mongoose. Nội dung công khai, quản trị và yêu cầu tư vấn dùng chung MongoDB. Trợ lý tiếng Việt truy xuất nội dung đã xuất bản rồi gọi Gemini từ máy chủ.
 
 ## Chạy trong VS Code (Windows PowerShell)
 
@@ -28,9 +28,9 @@ Cơ sở dữ liệu hỗ trợ lưu nội dung tiếng Việt, Anh, Nhật và 
 
 ## Bật trợ lý AI
 
-Trong `server/.env`, đặt `OPENAI_API_KEY` và `OPENAI_MODEL` thành các giá trị của tài khoản OpenAI có quyền gọi Chat Completions với chế độ JSON. Khởi động lại API. Chỉ nhập khóa vào tệp môi trường cục bộ. Trợ lý nhận câu hỏi và trích đoạn công khai liên quan, còn phiên đăng nhập và dữ liệu liên hệ nằm trong MongoDB. Khi thiếu khóa, giao diện báo trạng thái và dẫn tới Hỏi đáp hoặc Liên hệ.
+Trong `server/.env`, nhập khóa Google AI Studio vào `GEMINI_API_KEY`. `GEMINI_MODEL` mặc định là `gemini-3.5-flash-lite`. Khởi động lại API. Chỉ nhập khóa vào tệp môi trường cục bộ. Trợ lý dùng trích đoạn công khai để dẫn nguồn khi trả lời về Platinum. Với chủ đề ngoài công ty, trợ lý trả lời từ kiến thức của Gemini và gắn nhãn Kiến thức chung. Phiên đăng nhập và dữ liệu liên hệ nằm trong MongoDB. Khi thiếu khóa, giao diện báo trạng thái và dẫn tới Hỏi đáp hoặc Liên hệ.
 
-- OpenAI Chat Completions: https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create
+- Gemini API: https://ai.google.dev/api/generate-content
 - Nguồn dữ liệu công ty: hồ sơ năng lực Platinum do người dùng cung cấp.
 - Ảnh `client/public/platinum-hero.jpg` được tạo bằng công cụ ImageGen tích hợp. Prompt: Website hero, cinematic photorealistic editorial 3D render of a sculptural brushed platinum torus made of precise interlocking metallic segments with small cool blue accents, hovering above a reflective dark navy technical grid, deep midnight blue studio, electric indigo rim lighting, premium enterprise technology, composition centered for a right-half landscape crop, no people, no text, no logos, no watermark.
 
@@ -49,3 +49,11 @@ Logo chính thức, địa chỉ cụ thể tại Huế và Đà Nẵng, email v
 Ảnh minh họa danh mục sản phẩm được tạo bằng ImageGen tích hợp và lưu tại `client/public/platinum-platform.jpg`.
 
 Prompt: Create a wide photorealistic 3D editorial image for a Vietnamese enterprise technology website. Three layered translucent graphite glass circuit tiles forming a precise stacked modular architecture, sparse lavender light channels, polished platinum edges, subtle dark blue atmospheric background. Diagonal composition across frame, dramatic studio material quality. Premium industrial design, ample breathing room, no text, no logos, no people, no watermark.
+
+Ảnh banner `client/public/platinum-campus.jpg` là ảnh minh họa tạo bằng ImageGen tích hợp. Prompt: Ultra wide cinematic photographic hero for enterprise software consultancy website. Modern glass and dark steel technology research campus at blue hour, architecture and warm interior lights concentrated in right 60 percent, grounded realistic Vietnam contemporary office district without landmarks, camera from street level, restrained navy and silver palette with warm amber light, premium architecture editorial photography, moody navy shadows fading into naturally empty dark left half with uncluttered room for overlay title. No words, marks, branding or company signage.
+
+Nền logo được xử lý bằng ImageGen tích hợp. Các bản PNG được lưu trong `client/public/brand/` và dùng cho đầu trang, cuối trang, Giới thiệu và favicon.
+
+Prompt logo ngang: Background removal only for the provided Platinum Technology corporate logo. Preserve original wide horizontal logo placement, gray chip silhouette with engraved circuits, perfectly unchanged white lowercase pt lettering INSIDE the chip (keep white fully opaque), and the original two lines of gray typography spelling exactly 'platinum' then 'technology'. Remove exterior white background and cut out the white negative space around and between all gray wordmark letters and inside their counters, using real alpha. No new elements, no redesign, no glow. Use a wide horizontal canvas and tight safe margins.
+
+Prompt biểu tượng: Remove only the white background outside this Platinum Technology Pt electronics chip logo, replacing exterior white with real alpha transparency. Preserve the asymmetric rounded-corner square silhouette, all the original gray gradients and engraved circuit details, and the opaque white lowercase p and t inside the chip. Match the original artwork. Center the mark and trim the outside canvas to a small even margin. Square output, no new text or ornament.

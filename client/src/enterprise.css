@@ -1,0 +1,90 @@
+
+/* Enterprise presentation */
+:root{
+  --accent:#174eaf;
+  --ink:#14243d;
+  --muted:#4c5d73;
+  --line:#dce4ee;
+  --radius-structural:5px;
+}
+body{background:#fff}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.header{height:75px}
+.header nav a.active,.header nav a:hover{color:#174eaf}
+.header nav a.active::after{background:#174eaf}
+.header .top-ai{background:#edf4ff;border-color:#d9e6fa;color:#163c86}
+.header .top-ai:hover{background:#dfeaff}
+.primary:hover{background:#113b86}
+.hero.enterprise-hero{
+  background:#0b1930;min-height:0;
+  border-bottom:0;
+}
+.enterprise-hero .hero-grid{
+  min-height:clamp(500px,49vw,690px);
+  grid-template-columns:minmax(0,1fr);padding-block:clamp(68px,10vw,140px);
+}
+.enterprise-hero .hero-copy{max-width:730px}
+.enterprise-hero .hero-copy .eyebrow{color:#b8d6ff;margin-bottom:20px}
+.enterprise-hero .eyebrow span{background:#75b5ff}
+.enterprise-hero .hero-copy h1{
+  font-size:clamp(2.4rem,5.3vw,5rem);
+  max-width:17ch;letter-spacing:-.043em;line-height:1.06;text-wrap:balance;
+}
+.enterprise-hero .hero-copy>p:not(.eyebrow){font-size:clamp(1rem,1.5vw,1.15rem);max-width:52ch;color:#e1ebfb}
+.enterprise-hero .hero-art{
+  position:absolute;inset:0;z-index:-1;width:100%;aspect-ratio:auto;min-height:0;
+  border:0;border-radius:0;box-shadow:none;
+}
+.enterprise-hero .hero-art::before{
+  background-image:url('/platinum-campus.jpg');
+  background-position:center 55%;
+}
+.enterprise-hero .hero-art::after{
+  background:linear-gradient(90deg,#0a172efa 0%,#0a172ecf 36%,#0a172e44 74%,#0a172e15),linear-gradient(0deg,#0a172e50,transparent 60%);
+}
+.enterprise-hero .hero-glow{display:none}
+.enterprise-hero .primary{background:#2264ce}
+.enterprise-hero .primary:hover{background:#1148a2}
+.enterprise-hero .hero-alt{background:#111f36a6;border-color:#aabed780}
+.enterprise-hero .hero-alt:hover{background:#263e5a}
+.enterprise-ai{position:relative;z-index:1;display:flex;flex-wrap:wrap;align-items:center;gap:13px 24px;margin-top:-30px;padding:15px 19px;background:#fff;border:1px solid var(--line);border-radius:var(--radius-structural);box-shadow:0 8px 24px #172e5414}
+.enterprise-ai-title{display:flex;align-items:center;gap:10px}
+.enterprise-ai-title .tile{background:#edf4ff;color:#194f9f}
+.enterprise-ai-title h2{font-size:1.1rem;letter-spacing:-.01em}
+.enterprise-ai-questions{display:flex;flex-wrap:wrap;gap:7px}
+.enterprise-ai-questions button{display:inline-flex;align-items:center;gap:7px;border:1px solid #d7e5fa;border-radius:4px;padding:7px 9px;background:#f0f5ff;color:#214f9c;font-size:.83rem;text-align:left}
+.enterprise-ai-questions button:hover{background:#dfeaff;border-color:#adc5ea}
+.catalog-heading{border-bottom:1px solid var(--line);padding-bottom:18px}
+.catalog-heading h2,.catalog-heading h1{font-size:clamp(2rem,4vw,3.45rem)}
+.catalog-heading a,.section-title a,.catalog-count{color:#174eaf}
+.catalog-services .card{border-radius:var(--radius-structural);border-top:3px solid #c7daf5;background:#fff}
+.catalog-services .card::before{background:radial-gradient(ellipse at top right,#e7f1ff,transparent 73%)}
+.catalog-services .card:hover{border-color:#5489ce}
+.card-arrow{color:#174eaf}
+.card:hover .card-arrow{background:#174eaf}
+.catalog-products{background:#112541}
+.catalog-products .catalog-heading{border-color:#536780}
+.catalog-products .catalog-heading a,.catalog-products .catalog-count{color:#c4ddff}
+.products .card{background:#1a3253;border-color:#4b6380}
+.products .card .tile{color:#c8e0ff;background:#26486c;border-color:#4b6c94}
+.products .card::before{background:radial-gradient(ellipse at top right,#356ca580,transparent 75%)}
+.products .card:hover{border-color:#9abdff}
+.enterprise-overview{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:var(--layout-gap);
+  padding-block:var(--section-space);border-bottom:1px solid var(--line);
+}
+.enterprise-overview h2{font-size:clamp(1.7rem,3.1vw,2.65rem)}
+.enterprise-overview .body-text{margin:0 0 18px}
+.enterprise-overview .back{color:#174eaf}
+.enterprise-overview .back:hover{text-decoration:underline}
+.about-hero,.cta,.site-footer{background-color:#101f36}
+.about-hero{background-image:radial-gradient(ellipse at 78% 35%,#254665,transparent 65%)}
+.detail-banner{background:radial-gradient(ellipse at top right,#e4edfc,transparent 70%),#f3f6fb}
+@media(max-width:690px){
+  .header{height:65px}
+  .enterprise-hero .hero-grid{min-height:460px;padding-block:46px 66px}
+  .enterprise-hero .hero-art::before{background-position:64% center}
+  .enterprise-hero .hero-art::after{background:linear-gradient(90deg,#0a172ef2 0%,#0a172ecc 70%,#0a172e88)}
+  .enterprise-ai{margin-top:-20px;padding:12px}
+  .enterprise-overview{grid-template-columns:1fr}
+}

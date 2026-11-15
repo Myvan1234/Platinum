@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Bot, Boxes, BriefcaseBusiness, Building2, ChevronRight, Cloud, Code2, Cpu, GraduationCap, Layers3, MapPin, Menu, MessagesSquare, Monitor, Send, Sparkles, Workflow, X } from 'lucide-react';
@@ -8,8 +8,11 @@ import { useScrollReveal, CatalogCount } from './scroll-effects.jsx';
 import './style.css';
 import './presentation.css';
 import './motion.css';
+import './enterprise.css';
+import './inner-pages.css';
 
 const company = 'Platinum Technology';
+const CatalogContext = createContext(null);
 const category = { services: ['dich-vu', 'Dịch vụ'], products: ['san-pham', 'Sản phẩm'], projects: ['du-an', 'Dự án'] };
 const entryIcons = {
   'phat-trien-phan-mem': Code2, 'ai-va-ai-agent': Sparkles, 'ui-ux': Monitor, 'cloud-devops': Cloud,
@@ -31,7 +34,7 @@ function useData(path, refreshKey) {
   const [state, setState] = useState({});
   useEffect(() => {
     const abort = new AbortController();
-    if (path) api(path, { signal: abort.signal }).then(data => setState({ path, data }))
+    if (path) api(path, { signal: abort.signal }).then(data => { if (!abort.signal.aborted) setState({ path, data }); })
       .catch(error => { if (!abort.signal.aborted) setState({ path, error }); });
     return () => abort.abort();
   }, [path, refreshKey]);
@@ -46,8 +49,11 @@ function Meta({ title, description }) {
 }
 function Brand() {
   return <Link className="brand" to="/" aria-label="Platinum Technology — Trang chủ">
-    <span className="brand-icon"><Layers3 size={24} aria-hidden="true" /></span>
-    <span>PLATINUM<small>TECHNOLOGY</small></span>
+    <picture className="brand-logo">
+      <source media="(max-width: 520px)" srcSet="/brand/pt-mark-clear.png" />
+      <img src="/brand/platinum-wordmark-clear.png" alt="" />
+    </picture>
+    <span className="brand-mobile-name">Platinum Technology</span>
   </Link>;
 }
 function Header({ projects, onChat }) {
@@ -63,8 +69,8 @@ function Header({ projects, onChat }) {
     <button className="button top-ai" onClick={onChat}><Sparkles size={16} /> Hỏi AI</button>
   </div></header>;
 }
-function FooterCatalog({ group, refreshKey }) {
-  const { data } = useData('/content/' + group, refreshKey);
+function FooterCatalog({ group }) {
+  const { data } = useContext(CatalogContext)[group];
   const [slug, title] = category[group];
   const base = '/' + slug;
   return <div className="footer-column">
@@ -74,7 +80,7 @@ function FooterCatalog({ group, refreshKey }) {
   </div>;
 }
 
-function Footer({ projects, refreshKey }) {
+function Footer({ projects }) {
   return <footer className="site-footer">
     <div className="shell">
       <div className="footer-grid">
@@ -86,8 +92,8 @@ function Footer({ projects, refreshKey }) {
           </Link>
         </div>
         <nav className="footer-nav" aria-label="Điều hướng cuối trang">
-          <FooterCatalog group="services" refreshKey={refreshKey} />
-          <FooterCatalog group="products" refreshKey={refreshKey} />
+          <FooterCatalog group="services" />
+          <FooterCatalog group="products" />
           <div className="footer-column">
             <h2>Công ty</h2>
             <ul>
@@ -122,47 +128,79 @@ function Cards({ entries, group, heading = 'h3' }) {
     </Link>;
   })}</div>;
 }
+function PageBanner({ title, description, Icon }) {
+  return <section className="inner-banner"><div className="shell">
+    <nav className="breadcrumbs" aria-label="Đường dẫn trang">
+      <Link to="/">Trang chủ</Link><ChevronRight size={15} aria-hidden="true" />
+      <span aria-current="page">{title}</span>
+    </nav>
+    <div className="inner-banner-title">
+      <div><h1>{title}</h1>{description && <p className="lead">{description}</p>}</div>
+      {Icon && <span className="inner-banner-icon"><Icon size={42} strokeWidth={1.4} aria-hidden="true" /></span>}
+    </div>
+  </div></section>;
+}
+
 function Listing({ group, home = false }) {
-  const { data, error } = useData('/content/' + group);
+  const { data, error } = useContext(CatalogContext)[group];
   const [url, title] = category[group];
   if (home && !data?.length) return null;
-  return <section className={'catalog catalog-' + group + (home ? ' catalog-home' : '')} id={home ? url : undefined}>
-    <div className={'shell section ' + (home ? '' : 'page')}>
-      {!home && <Meta title={title} description={categoryCopy[group]} />}
+  const Icon = group === 'services' ? Layers3 : group === 'products' ? Boxes : BriefcaseBusiness;
+  if (!home) return <>
+    <Meta title={title} description={categoryCopy[group]} />
+    <PageBanner title={title} description={categoryCopy[group]} Icon={Icon} />
+    <section className={'inner-catalog catalog catalog-' + group}>
+      <div className="shell section">
+        {data?.length ? <div className={group === 'products' ? 'product-layout' : undefined}>
+          {group === 'products' && <div className="product-visual" data-scroll-reveal aria-hidden="true" />}
+          <Cards entries={data} group={group} heading="h2" />
+        </div> : data ? <div className="inner-empty">
+          <span className="tile"><Icon size={24} aria-hidden="true" /></span>
+          <h2>Nội dung đang được cập nhật</h2>
+          <Link className="back" to="/lien-he">Liên hệ Platinum <ArrowRight size={16} aria-hidden="true" /></Link>
+        </div> : <Status error={error} />}
+      </div>
+    </section>
+  </>;
+  return <section className={'catalog catalog-' + group + ' catalog-home'} id={url}>
+    <div className="shell section">
+
       <div className="section-title catalog-heading" data-scroll-reveal>
-        <div>{home && !!data?.length && <CatalogCount key={data.length} count={data.length} label={title.toLowerCase()} />}
-          {home ? <h2>{title}</h2> : <h1>{title}</h1>}<p>{categoryCopy[group]}</p></div>
-        {home && <Link to={'/' + url}>Xem tất cả <ArrowRight size={17} aria-hidden="true" /></Link>}
+        <div><CatalogCount key={data.length} count={data.length} label={title.toLowerCase()} />
+          <h2>{title}</h2><p>{categoryCopy[group]}</p></div>
+        <Link to={'/' + url}>Xem tất cả <ArrowRight size={17} aria-hidden="true" /></Link>
       </div>
       <div className={group === 'products' ? 'product-layout' : undefined}>
         {group === 'products' && <div className="product-visual" data-scroll-reveal aria-hidden="true" />}
-        {data ? data.length ? <Cards entries={data} group={group} heading={home ? 'h3' : 'h2'} /> : <p className="notice">Nội dung đang được cập nhật.</p> : <Status error={error} />}
+        <Cards entries={data} group={group} />
       </div>
     </div>
   </section>;
 }
 function Home({ onChat }) {
   const { data, error } = useData('/content/pages/trang-chu');
-  const links = [
-    ['/gioi-thieu', Building2, 'Về Platinum', 'Tìm hiểu về công ty'],
-    ['/dich-vu', Layers3, 'Dịch vụ', 'Khám phá các lĩnh vực công nghệ'],
-    ['/san-pham', Boxes, 'Sản phẩm', 'Xem danh mục sản phẩm'],
-  ];
+  const about = useData('/content/pages/gioi-thieu');
   return <><Meta description={data?.summary} />
-    <section className="hero"><div className="shell hero-grid">
+    <section className="hero enterprise-hero"><div className="shell hero-grid">
       <div className="hero-copy">{data ? <><p className="eyebrow"><span /> PLATINUM TECHNOLOGY</p><div className="hero-title-mask"><h1>{data.title}</h1></div><p>{data.summary}</p></> : <Status error={error} />}
         <div className="actions"><Link className="button primary" to="/lien-he">Trao đổi nhu cầu <ArrowRight size={18} aria-hidden="true" /></Link>
           <button className="button hero-alt" onClick={onChat}><Sparkles size={17} aria-hidden="true" /> Hỏi AI về Platinum</button></div>
       </div>
-      <div className="hero-art" aria-hidden="true"><span className="hero-frame" /><span className="hero-glow" /></div>
+      <div className="hero-art" aria-hidden="true" />
     </div></section>
-    <nav className="shell quick-nav" aria-label="Khám phá Platinum">
-      {links.map(([url, Icon, title, description]) => <Link key={url} to={url}>
-        <span className="tile"><Icon size={23} strokeWidth={1.7} aria-hidden="true" /></span>
-        <span><strong>{title}</strong><small>{description}</small></span>
-        <ArrowUpRight size={17} aria-hidden="true" />
-      </Link>)}
-    </nav>
+    <section className="shell enterprise-ai" aria-labelledby="home-ai-title">
+      <div className="enterprise-ai-title"><span className="tile"><Sparkles size={21} aria-hidden="true" /></span>
+        <h2 id="home-ai-title">Khám phá Platinum cùng AI</h2></div>
+      <div className="enterprise-ai-questions">
+        {['Platinum có những dịch vụ nào?', 'Platinum có những sản phẩm nào?', 'Platinum hoạt động ở đâu?'].map(question =>
+          <button key={question} type="button" onClick={() => onChat(question)}>{question}<ArrowUpRight size={15} aria-hidden="true" /></button>)}
+      </div>
+    </section>
+    {about.data?.body && <section className="shell enterprise-overview" data-scroll-reveal>
+      <h2>Về Platinum Technology</h2>
+      <div><p className="body-text">{about.data.body.split(/\n{2,}/)[0]}</p>
+        <Link className="back" to="/gioi-thieu">Tìm hiểu về Platinum <ArrowRight size={17} aria-hidden="true" /></Link></div>
+    </section>}
     <Listing group="services" home />
     <Listing group="products" home />
     <Listing group="projects" home />
@@ -182,7 +220,7 @@ function Paragraphs({ text }) {
 
 function About() {
   const { data, error } = useData('/content/pages/gioi-thieu');
-  const services = useData('/content/services');
+  const { services } = useContext(CatalogContext);
   const pages = useData('/content/pages');
   if (!data) return <Status error={error} />;
   const extraSections = pages.data?.filter(entry => aboutSections.includes(entry.slug)) || [];
@@ -204,13 +242,19 @@ function About() {
             <Link className="button about-secondary" to="/dich-vu">Khám phá dịch vụ <ArrowUpRight size={16} aria-hidden="true" /></Link>
           </div>
         </div>
-        <div className="about-visual" aria-hidden="true" />
+        <div className="about-visual"><img src="/brand/platinum-wordmark-clear.png" alt="Logo Platinum Technology" width="960" height="320" /></div>
       </div>
     </div></section>
 
-    {data.body && <section className="shell about-overview" data-scroll-reveal>
-      <h2>Tổng quan doanh nghiệp</h2>
-      <div className="about-prose"><Paragraphs text={data.body} /></div>
+    {data.body && <section className="shell about-overview" aria-labelledby="about-overview-title" data-scroll-reveal>
+      <div className="about-overview-card">
+        <div className="about-overview-heading">
+          <span className="about-overview-icon"><Building2 size={29} strokeWidth={1.6} aria-hidden="true" /></span>
+          <h2 id="about-overview-title">Tổng quan doanh nghiệp</h2>
+          {!!services.data?.length && <a href="#linh-vuc-cong-nghe">Khám phá lĩnh vực công nghệ <ArrowRight size={17} aria-hidden="true" /></a>}
+        </div>
+        <div className="about-prose"><Paragraphs text={data.body} /></div>
+      </div>
     </section>}
 
     {extraSections.length > 0 && <div className="shell about-extras">
@@ -221,7 +265,7 @@ function About() {
       </section>)}
     </div>}
 
-    {!!services.data?.length && <section className="about-expertise"><div className="shell">
+    {!!services.data?.length && <section className="about-expertise" id="linh-vuc-cong-nghe"><div className="shell">
       <div className="section-title catalog-heading" data-scroll-reveal>
         <h2>Lĩnh vực công nghệ</h2><Link to="/dich-vu">Tất cả dịch vụ <ArrowRight size={17} aria-hidden="true" /></Link>
       </div>
@@ -241,8 +285,11 @@ function About() {
 function Detail({ group }) {
   const { slug } = useParams();
   const { data, error } = useData('/content/' + group + '/' + slug);
+  const related = useContext(CatalogContext)[group]?.data?.filter(entry => entry.slug !== slug).slice(0, 4) || [];
   if (!data) return <Status error={error} />;
   const Icon = entryIcons[data.slug] || (group === 'projects' ? BriefcaseBusiness : Layers3);
+  const productNeedsDetails = group === 'products' && !data.summary && !data.body;
+  const detailTitles = { services: 'Thông tin dịch vụ', products: 'Thông tin sản phẩm', projects: 'Thông tin dự án' };
   return <article className="detail-page"><Meta title={data.title} description={data.summary} />
     <div className="detail-banner"><div className="shell detail-inner">
       <nav aria-label="Đường dẫn trang" className="breadcrumbs"><Link to="/">Trang chủ</Link>
@@ -252,10 +299,23 @@ function Detail({ group }) {
       <div className="detail-head"><span className="tile"><Icon size={33} strokeWidth={1.6} aria-hidden="true" /></span>
         <div><h1>{data.title}</h1>{data.summary && <p className="lead">{data.summary}</p>}</div></div>
     </div></div>
-    <div className="shell detail-inner detail-content">
-      {group === 'products' && !data.summary && !data.body && <p className="body-text">Để tìm hiểu thêm về {data.title}, hãy gửi câu hỏi qua biểu mẫu liên hệ.</p>}
-      <Paragraphs text={data.body} />
-      <Link to="/lien-he" className="button primary">Trao đổi nhu cầu <ArrowRight size={17} aria-hidden="true" /></Link>
+    <div className="shell detail-inner detail-content inner-detail-grid">
+      {(data.body || productNeedsDetails) && <section className="inner-detail-copy" aria-labelledby="detail-copy-title" data-scroll-reveal>
+        <h2 id="detail-copy-title">{detailTitles[group] || 'Thông tin chi tiết'}</h2>
+        {productNeedsDetails && <p className="body-text">Để tìm hiểu thêm về {data.title}, hãy gửi câu hỏi qua biểu mẫu liên hệ.</p>}
+        <Paragraphs text={data.body} />
+      </section>}
+      <aside className="inner-aside">
+        <div className="inner-support"><h2>Trao đổi với Platinum</h2>
+          <Link to="/lien-he" className="button primary">Trao đổi nhu cầu <ArrowRight size={17} aria-hidden="true" /></Link>
+        </div>
+        {!!related.length && <nav aria-label="Nội dung cùng danh mục" className="inner-related">
+          <h2>Cùng danh mục</h2>
+          {related.map(entry => <Link key={entry.slug} to={'/' + category[group][0] + '/' + entry.slug}>
+            {entry.title}<ChevronRight size={16} aria-hidden="true" />
+          </Link>)}
+        </nav>}
+      </aside>
     </div>
   </article>;
 }
@@ -267,10 +327,14 @@ function Faq() {
     const target = document.getElementById(hash.slice(1));
     if (target) { target.open = true; target.scrollIntoView({ block: 'center' }); }
   }, [data, hash]);
-  return <section className="shell page detail"><Meta title="Hỏi đáp" /><h1>Hỏi đáp về Platinum</h1>
+  return <><Meta title="Hỏi đáp" />
+    <PageBanner title="Hỏi đáp về Platinum" description="Tìm hiểu về công ty, dịch vụ, sản phẩm và cách gửi yêu cầu hợp tác." Icon={MessagesSquare} />
+    <section className="shell section inner-faq"><div>
     {data ? data.map(item => <details data-scroll-reveal key={item.slug} id={item.slug}><summary>{item.title}<ChevronRight size={18} aria-hidden="true" /></summary>
       <p>{item.summary}</p>{item.slug === "gui-yeu-cau" && <p><Link className="back" to="/lien-he">Mở trang Liên hệ</Link></p>}{item.body && <p className="body-text">{item.body}</p>}</details>) : <Status error={error} />}
-  </section>;
+    </div><aside className="inner-aside"><div className="inner-support">
+      <h2>Bạn có câu hỏi khác?</h2><Link className="button primary" to="/lien-he">Gửi câu hỏi <ArrowRight size={16} aria-hidden="true" /></Link>
+    </div></aside></section></>;
 }
 function Contact() {
   const { data, error } = useData('/content/pages/lien-he');
@@ -285,9 +349,13 @@ function Contact() {
       setStatus({ ok: true });
     } catch (error) { setStatus({ error: error.message }); }
   }
-  return <section className="shell page contact-layout"><Meta title="Liên hệ" description={data?.summary} />
-    <div className="contact-intro"><span className="tile"><MessagesSquare size={28} strokeWidth={1.7} aria-hidden="true" /></span>{data ? <><h1>{data.title}</h1><p className="lead">{data.summary}</p>{data.body && <p className="body-text">{data.body}</p>}</> :
-      error?.status === 404 ? <h1>Liên hệ Platinum</h1> : <Status error={error} />}</div>
+  return <><Meta title="Liên hệ" description={data?.summary} />
+    <PageBanner title={data?.title || 'Liên hệ Platinum'} description={data?.summary} Icon={MessagesSquare} />
+    <section className="shell section contact-layout">
+      <div className="contact-intro"><h2>Thông tin liên hệ</h2>
+        {data?.body ? <Paragraphs text={data.body} /> : !data && error?.status !== 404 && <Status error={error} />}
+        <Link className="back" to="/hoi-dap">Xem câu hỏi thường gặp <ArrowRight size={16} aria-hidden="true" /></Link>
+      </div>
     <form className="panel" onSubmit={submit}><h2>Gửi yêu cầu tư vấn</h2><div className="form-grid">
       {contactFields.map(([name, label, type, maxLength, required, autoComplete]) => <label key={name}>{label}{required && ' *'}
         <input {...{ name, type, maxLength, required, autoComplete }} /></label>)}
@@ -295,9 +363,9 @@ function Contact() {
     </div><button className="button primary" disabled={status.busy}>{status.busy ? 'Đang gửi…' : 'Gửi yêu cầu'} <Send size={16} /></button>
     {status.ok && <p className="notice success" role="status">Platinum đã nhận được yêu cầu của bạn.</p>}
     {status.error && <p className="notice error" role="alert">{status.error}</p>}</form>
-  </section>;
+  </section></>;
 }
-function Chat({ open, onClose }) {
+function Chat({ open, onClose, seed }) {
   const dialog = useRef();
   const input = useRef();
   const log = useRef();
@@ -305,9 +373,9 @@ function Chat({ open, onClose }) {
   const [history, setHistory] = useState([]);
   const [busy, setBusy] = useState(false);
   useEffect(() => {
-    if (open && !dialog.current.open) { dialog.current.showModal(); input.current.focus(); }
+    if (open && !dialog.current.open) { input.current.value = seed; dialog.current.showModal(); input.current.focus(); }
     if (!open && dialog.current.open) dialog.current.close();
-  }, [open]);
+  }, [open, seed]);
   useEffect(() => { if (open) log.current.scrollTop = log.current.scrollHeight; }, [history, busy, open]);
   async function ask(question) {
     if (!question || busyRef.current) return;
@@ -325,13 +393,14 @@ function Chat({ open, onClose }) {
     <div className="chat-header"><Bot size={23} /><h2 id="chat-title">Trợ lý Platinum</h2>
       <button className="icon-button" onClick={onClose} aria-label="Đóng chat"><X /></button></div>
     <div className="chat-log" ref={log} role="log" aria-live="polite">
-      {history.length === 0 && <><p className="bubble">Bạn muốn tìm hiểu gì về Platinum Technology?</p><div className="suggestions">
-        {['Platinum có những dịch vụ nào?', 'Platinum hoạt động ở đâu?'].map(question => <button key={question} onClick={() => ask(question)}>{question}</button>)}
+      {history.length === 0 && <><p className="bubble">Bạn có thể hỏi về Platinum hoặc các chủ đề khác, chẳng hạn ẩm thực, học tập và công nghệ.</p><div className="suggestions">
+        {['Platinum có những dịch vụ nào?', 'Huế có món gì nổi bật?'].map(question => <button key={question} onClick={() => ask(question)}>{question}</button>)}
       </div></>}
       {history.map((item, index) => <div className={'bubble' + (item.question ? ' question' : '')} key={index}>
         {item.question || item.answer || item.error}
+        {item.scope === 'general' && <p className="chat-scope">Kiến thức chung</p>}
         {item.sources?.length > 0 && <ul>{item.sources.map(source => <li key={source.url}><Link onClick={onClose} to={source.url}>{source.title}</Link></li>)}</ul>}
-        {(item.error || item.sources?.length === 0) && <p className="chat-links"><Link onClick={onClose} to="/hoi-dap">Hỏi đáp</Link><Link onClick={onClose} to="/lien-he">Liên hệ</Link></p>}
+        {(item.error || item.scope === 'unknown') && <p className="chat-links"><Link onClick={onClose} to="/hoi-dap">Hỏi đáp</Link><Link onClick={onClose} to="/lien-he">Liên hệ</Link></p>}
       </div>)}
       {busy && <p className="bubble">Đang tra cứu…</p>}
     </div>
@@ -343,12 +412,19 @@ function Chat({ open, onClose }) {
 }
 function App() {
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatSeed, setChatSeed] = useState('');
   const location = useLocation();
   const motionRoot = useScrollReveal(location.pathname);
-  const { data: projects } = useData('/content/projects', location.pathname);
+  const inAdmin = location.pathname === '/quan-tri';
+  const services = useData('/content/services', inAdmin);
+  const products = useData('/content/products', inAdmin);
+  const projects = useData('/content/projects', inAdmin);
   useEffect(() => { if (!location.hash) window.scrollTo(0, 0); }, [location.pathname, location.hash]);
-  const onChat = () => setChatOpen(true);
-  return <><a href="#main" className="skip">Đến nội dung chính</a><Header projects={projects?.length} onChat={onChat} />
+  const onChat = question => {
+    setChatSeed(typeof question === 'string' ? question : '');
+    setChatOpen(true);
+  };
+  return <CatalogContext.Provider value={{ services, products, projects }}><a href="#main" className="skip">Đến nội dung chính</a><Header projects={projects.data?.length} onChat={onChat} />
     <main id="main" ref={motionRoot}><div key={location.pathname} className="route-content"><Routes>
       <Route path="/" element={<Home onChat={onChat} />} />
       <Route path="/gioi-thieu" element={<About />} />
@@ -361,9 +437,9 @@ function App() {
       </React.Fragment>)}
       <Route path="/:slug" element={<Detail group="pages" />} />
       <Route path="*" element={<Status missing />} />
-    </Routes></div></main><Footer projects={projects?.length} refreshKey={location.pathname} />
+    </Routes></div></main><Footer projects={projects.data?.length} />
     <button className="chat-launch button primary" onClick={onChat}><Sparkles size={18} /> <span>Hỏi AI</span></button>
-    <Chat open={chatOpen} onClose={() => setChatOpen(false)} />
-  </>;
+    <Chat seed={chatSeed} open={chatOpen} onClose={() => setChatOpen(false)} />
+  </CatalogContext.Provider>;
 }
 createRoot(document.getElementById('root')).render(<BrowserRouter><App /></BrowserRouter>);

@@ -11,12 +11,13 @@ try {
   await connect();
   browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  page.setDefaultTimeout(7500);
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(origin);
   await page.getByRole('heading', { name: 'Công nghệ cho bài toán doanh nghiệp.' }).waitFor();
   assert.equal(await page.locator('header').getByRole('link', { name: 'Dự án' }).count(), 0);
-  const hero = await page.request.get(origin + '/platinum-hero.jpg');
+  const hero = await page.request.get(origin + '/platinum-campus.jpg');
   assert.equal(hero.status(), 200);
   assert.match(hero.headers()['content-type'], /^image\//);
   await page.locator('main').getByRole('link', { name: 'Cloud và DevOps', exact: false }).click();
@@ -32,6 +33,7 @@ try {
   await page.getByRole('button', { name: 'Mở menu' }).focus();
   await page.keyboard.press('Enter');
   await page.locator('#site-nav').getByRole('link', { name: 'Trang chủ' }).click();
+  await page.waitForURL(origin + '/');
   await page.getByRole('heading', { name: 'Công nghệ cho bài toán doanh nghiệp.' }).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   const opener = page.getByRole('button', { name: 'Hỏi AI về Platinum' });

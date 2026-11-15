@@ -24,27 +24,28 @@ function Login({ onLogin }) {
     {error && <p className="notice error" role="alert">{error}</p>}
   </form>;
 }
-function Editor({ selection, choose, group, entries, refresh, fail }) {
-  const [busy, setBusy] = useState(false);
+function Editor({ selection, choose, group, entries, refresh, fail, busy, setBusy }) {
+  const [dirty, setDirty] = useState(false);
   const [note, setNote] = useState('');
   const locked = selection?.status === 'published';
-  const field = (name, value) => choose({ ...selection, [name]: value });
+  const field = (name, value) => { setDirty(true); setNote(''); choose({ ...selection, [name]: value }); };
   async function write(action) {
+    if (busy || (dirty && action === 'published')) return;
     setBusy(true); setNote('');
     try {
       const path = '/admin/content/' + group + (selection._id ? '/' + selection._id : '');
       const updated = action === 'save'
         ? await api(path, { method: selection._id ? 'PUT' : 'POST', body: selection })
         : await api(path + '/status', { method: 'PATCH', body: { status: action } });
-      choose(updated); refresh();
+      choose(updated); setDirty(false); refresh();
       setNote(action === 'save' ? 'Đã lưu bản nháp.' : action === 'published' ? 'Đã xuất bản.' : 'Đã gỡ xuất bản.');
     } catch (error) { fail(error); }
     finally { setBusy(false); }
   }
   return <div className="admin-grid">
-    <aside className="panel entry-list"><button disabled={busy} className="button primary" onClick={() => { choose({ ...blank }); setNote(''); }}>Tạo bản nháp</button>
+    <aside className="panel entry-list"><button disabled={busy} className="button primary" onClick={() => { choose({ ...blank }); setDirty(false); setNote(''); }}>Tạo bản nháp</button>
       {entries.map(entry => <button disabled={busy} key={entry._id} className={selection?._id === entry._id ? 'selected' : ''}
-        onClick={() => { choose(entry); setNote(''); }}><strong>{entry.title}</strong><small>{entry.locale.toUpperCase()} · {entry.status === 'published' ? 'Đã xuất bản' : 'Bản nháp'}</small></button>)}
+        onClick={() => { choose(entry); setDirty(false); setNote(''); }}><strong>{entry.title}</strong><small>{entry.locale.toUpperCase()} · {entry.status === 'published' ? 'Đã xuất bản' : 'Bản nháp'}</small></button>)}
     </aside>
     {selection ? <form className="panel editor" onSubmit={event => { event.preventDefault(); write('save'); }}>
       <h2>{selection._id ? selection.title : 'Bản nháp mới'}</h2>
@@ -59,8 +60,9 @@ function Editor({ selection, choose, group, entries, refresh, fail }) {
       </div></fieldset>
       <div className="actions">
         {!locked && <button className="button primary" disabled={busy}>Lưu bản nháp</button>}
-        {selection._id && <button type="button" className="button outline" disabled={busy} onClick={() => write(locked ? 'draft' : 'published')}>{locked ? 'Gỡ xuất bản' : 'Xuất bản bản đã lưu'}</button>}
+        {selection._id && <button type="button" className="button outline" disabled={busy || (!locked && dirty)} onClick={() => write(locked ? 'draft' : 'published')}>{locked ? 'Gỡ xuất bản' : 'Xuất bản bản đã lưu'}</button>}
       </div>
+      {dirty && selection._id && <p className="notice" role="status">Lưu thay đổi trước khi xuất bản.</p>}
       {note && <p className="notice success" role="status">{note}</p>}
     </form> : <div className="panel">Chọn một mục hoặc tạo bản nháp để bắt đầu.</div>}
   </div>;
@@ -92,6 +94,7 @@ export default function Admin() {
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
   const [revision, bump] = useState(0);
+  const [editing, setEditing] = useState(false);
   const [error, setError] = useState('');
   const refresh = () => bump(value => value + 1);
   const fail = error => { setError(error.message); if (error.status === 401) setAccount(null); };
@@ -105,7 +108,8 @@ export default function Admin() {
     if (!account) return;
     const abort = new AbortController();
     api(group === 'contacts' ? '/admin/contacts?page=' + page : '/admin/content/' + group, { signal: abort.signal })
-      .then(setData).catch(error => { if (!abort.signal.aborted) fail(error); });
+      .then(value => { if (!abort.signal.aborted) setData(value); })
+      .catch(error => { if (!abort.signal.aborted) fail(error); });
     return () => abort.abort();
   }, [account, group, page, revision]);
   async function signOut() {
@@ -115,11 +119,11 @@ export default function Admin() {
   return <section className="shell page admin">
     {error && <p className="notice error" role="alert">{error}</p>}
     {account === undefined ? <p role="status">Đang kiểm tra phiên…</p> : !account ? <Login onLogin={value => { setError(''); setAccount(value); }} /> :
-      <><div className="section-title"><div><h1>Quản trị Platinum</h1><p>{account.email}</p></div><button className="button outline" onClick={signOut}>Đăng xuất</button></div>
+      <><div className="section-title"><div><h1>Quản trị Platinum</h1><p>{account.email}</p></div><button className="button outline" disabled={editing} onClick={signOut}>Đăng xuất</button></div>
         <nav className="tabs" aria-label="Quản trị nội dung">{Object.entries({ ...groups, contacts: 'Yêu cầu tư vấn' }).map(([id, title]) =>
-          <button key={id} aria-pressed={group === id} onClick={() => { if (id === group) return; setGroup(id); setData(null); choose(null); setError(''); setPage(1); }}>{title}</button>)}</nav>
-        {data ? group === 'contacts' ? <Contacts data={data} page={page} setPage={setPage} refresh={refresh} fail={fail} /> :
-          <Editor key={group} entries={data} group={group} selection={selection} choose={choose} refresh={() => { setError(''); refresh(); }} fail={fail} /> : !error && <p role="status">Đang tải…</p>}
+          <button key={id} disabled={editing} aria-pressed={group === id} onClick={() => { if (id === group) return; setGroup(id); setData(null); choose(null); setError(''); setPage(1); }}>{title}</button>)}</nav>
+        {data ? group === 'contacts' ? <Contacts data={data} page={page} setPage={value => { setData(null); setPage(value); }} refresh={refresh} fail={fail} /> :
+          <Editor key={group} busy={editing} setBusy={setEditing} entries={data} group={group} selection={selection} choose={choose} refresh={() => { setError(''); refresh(); }} fail={fail} /> : !error && <p role="status">Đang tải…</p>}
       </>}
   </section>;
 }

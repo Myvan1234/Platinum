@@ -274,11 +274,7 @@ label,.button,.header nav{font-weight:600}
 .about-marker{display:grid;place-items:center;width:46px;height:46px;margin-bottom:18px;color:#ded7ff;background:#2d2b55;border:1px solid #5d588c;border-radius:9px}
 .about-secondary{color:#f1edff;background:#222b47;border-color:#566185}
 .about-secondary:hover{background:#303c61}
-.about-visual{aspect-ratio:1.6;border:1px solid #5a6689;border-radius:var(--radius-structural);background:linear-gradient(145deg,#12193210,#111b3544),url('/platinum-platform.jpg') center/cover no-repeat,#202b51;box-shadow:0 14px 34px #050b2455}
-.about-overview{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:var(--layout-gap);padding-block:var(--section-space)}
-.about-prose{border-left:1px solid var(--line);padding-left:var(--layout-gap)}
-.about-prose .body-text{margin-top:0;font-size:1rem}
-.about-prose .body-text+.body-text{margin-top:14px}
+
 .about-extras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--layout-gap);padding-bottom:var(--section-space)}
 .about-info{padding:20px;border:1px solid var(--line);border-radius:var(--radius-structural);background:white;scroll-margin-top:88px}
 .about-info h2{font-size:1.3rem}
@@ -289,8 +285,20 @@ label,.button,.header nav{font-weight:600}
 .about-service-list small{display:block;margin-top:3px;color:var(--muted);font-size:.875rem}
 .about-service-arrow{color:#5749c8;margin-top:3px}
 @media(max-width:690px){
-  .about-hero-grid,.about-overview,.about-service-list,.about-extras{grid-template-columns:1fr}
-  .about-prose{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:16px}
-  .about-visual{aspect-ratio:1.8}
+  .about-hero-grid,.about-service-list,.about-extras{grid-template-columns:1fr}
+
   .about-expertise .section-title{align-items:flex-start;flex-wrap:wrap}
+}
+
+/* Logo artwork supplied by Platinum */
+.brand-logo{display:block;width:clamp(135px,15vw,180px);aspect-ratio:3.3;flex:none}
+.brand-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.brand-mobile-name{display:none}
+.site-footer .brand-logo{width:170px;filter:brightness(1.38)}
+.about-visual{display:grid;place-items:center;min-width:0}
+.about-visual img{display:block;width:100%;height:auto;filter:brightness(1.52)}
+@media(max-width:520px){
+  .brand-logo,.site-footer .brand-logo{width:39px;aspect-ratio:1}
+  .brand-logo img{transform:scale(1.18)}
+  .brand-mobile-name{display:inline;max-width:9ch;font-size:.86rem;line-height:1.15;letter-spacing:0}
 }

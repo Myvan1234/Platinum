@@ -10,7 +10,9 @@ import { chat } from './chat.js';
 const app = express();
 app.disable('x-powered-by');
 app.use(helmet());
-app.use(express.json({ limit: '24kb' }));
+const parsePublicJson = express.json({ limit: '24kb' });
+const parseAdminJson = express.json({ limit: '96kb' });
+app.use((req, res, next) => (req.path.startsWith('/api/admin/') ? parseAdminJson : parsePublicJson)(req, res, next));
 app.use('/api', (_, res, next) => { res.set('Cache-Control', 'no-store'); next(); });
 const limit = (count, windowMs) => rateLimit({
   limit: count, windowMs, standardHeaders: 'draft-8', legacyHeaders: false,
@@ -19,6 +21,7 @@ const limit = (count, windowMs) => rateLimit({
 const bad = (res, error = 'Dữ liệu không hợp lệ.') => res.status(400).json({ error });
 const missing = res => res.status(404).json({ error: 'Không tìm thấy nội dung.' });
 const pickGroup = name => Object.hasOwn(content, name) ? content[name] : null;
+const reservedPageSlugs = new Set(['dich-vu', 'san-pham', 'du-an', 'hoi-dap', 'quan-tri', 'api', 'assets']);
 const slugValid = slug => typeof slug === 'string' && slug.length <= 100 && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 const idValid = id => /^[a-f0-9]{24}$/i.test(id);
 const emailValid = email => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -105,6 +108,7 @@ admin.post('/content/:group', async (req, res) => {
   if (!model) return missing(res);
   const fields = contentInput(req.body);
   if (!fields) return bad(res, 'Kiểm tra tiêu đề, slug, ngôn ngữ và thứ tự.');
+  if (req.params.group === 'pages' && reservedPageSlugs.has(fields.slug)) return bad(res, 'Slug này đã được một trang hệ thống sử dụng.');
   res.status(201).json(await model.create(fields));
 });
 admin.put('/content/:group/:id', async (req, res) => {
@@ -113,6 +117,7 @@ admin.put('/content/:group/:id', async (req, res) => {
   if (!model || !idValid(id)) return missing(res);
   const fields = contentInput(req.body);
   if (!fields) return bad(res, 'Kiểm tra tiêu đề, slug, ngôn ngữ và thứ tự.');
+  if (req.params.group === 'pages' && reservedPageSlugs.has(fields.slug)) return bad(res, 'Slug này đã được một trang hệ thống sử dụng.');
   const entry = await model.findOneAndUpdate({ _id: id, status: 'draft' }, fields, { new: true, runValidators: true }).lean();
   if (!entry) return res.status(409).json({ error: 'Hãy gỡ xuất bản trước khi chỉnh sửa mục này.' });
   res.json(entry);
@@ -139,7 +144,10 @@ const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const html = fileURLToPath(new URL('../dist/index.html', import.meta.url));
 if (existsSync(html)) {
   app.use(express.static(dist));
-  app.get(/.*/, (_, res) => res.sendFile(html));
+  app.get(/.*/, (req, res, next) => {
+    if (!req.accepts('html') || /\.[a-z0-9]+$/i.test(req.path)) return next();
+    res.sendFile(html);
+  });
 }
 app.use((error, req, res, next) => {
   if (res.headersSent) return next(error);
